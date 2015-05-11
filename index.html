@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<title>Tech Dojo</title>
+<style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/1.6.0/annyang.min.js"></script>
+</head>
+
+<body >
+<script>
+var map;
+var infowindow;
+var name;
+var type_of_place;
+var lat;
+var lng;
+var rad;
+var userData= ["Tom",23.752805, 90.375433, 500 ,  
+               "Jane", 23.755790, 90.387363, 400 , 
+               "Dave", 23.765138, 90.362601, 450 ,
+               "Sarah",  23.792452, 90.416696, 600, 
+               "John", 23.863064, 90.400126, 640 ];
+
+if (annyang) {
+
+//defining the command to be recieved and assigning the necessary values to the variables
+//used alerts as a debugging mechanism
+//first alert is to show the user what the computer heard
+  var commands = {
+    'find :type near :nam': function(type,nam) {
+name=nam;
+type_of_place=type;
+  alert('you said: Find ' + type+ ' near ' + nam );
+
+if(name=='Tom'){
+	lat=userData[1];
+	lng=userData[2];
+	rad=userData[3];
+	initialize();
+//	alert('I can hear you!' + name +' '+ lat +' '+ lng+' '+ rad);
+}
+else if (name=='Jane') {
+    lat=userData[5];
+	lng=userData[6];
+	rad=userData[7];
+	initialize();
+//	alert('I can hear you!' + name +' '+ lat +' '+ lng+' '+ rad);
+}
+else if (name=='Dave') {
+    lat=userData[9];
+	lng=userData[10];
+	rad=userData[11];
+	initialize();
+//	alert('I can hear you!' + name +' '+ lat +' '+ lng+' '+ rad);
+}
+else if (name=='Sarah') {
+    lat=userData[13];
+	lng=userData[14];
+	rad=userData[15];
+	initialize();
+//	alert('I can hear you!' + name +' '+ lat +' '+ lng+' '+ rad);
+}
+else if (name=='John') {
+    lat=userData[17];
+	lng=userData[18];
+	rad=userData[19];
+	initialize();
+	//	alert('I can hear you!' + name +' '+ lat +' '+ lng+' '+ rad);
+}
+else{
+alert('I did not understand! please repeat');	
+}
+}
+};
+
+  // Add command to annyang
+  annyang.addCommands(commands);
+
+  // Start listening.
+  function start(){
+  annyang.start();
+}
+}
+
+function initialize() {
+  var mycenter = new google.maps.LatLng(lat,lng);
+// alert('I can ' + name +' '+ lat +' '+ lng+' '+ rad+ type_of_place);
+  map = new google.maps.Map(document.getElementById('map-canvas'), {
+    center: mycenter,
+    zoom: 15
+  });
+
+  var request = {
+    location: mycenter,
+    radius: rad,
+    types: [type_of_place]
+  };
+  
+  infowindow = new google.maps.InfoWindow();
+  var service = new google.maps.places.PlacesService(map);
+  service.nearbySearch(request, callback);
+}
+
+function callback(results, status) {
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+  	
+    for (var i = 0; i < results.length; i++) {
+
+      createMarker(results[i]);
+    }
+  }
+}
+
+function createMarker(place) {
+  var placeLoc = place.geometry.location;
+  var marker = new google.maps.Marker({
+    map: map,
+    position: place.geometry.location
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(place.name);
+    infowindow.open(map, this);
+  });
+}
+
+</script>
+<button style="width:100%" onclick="start()">PRESS TO START TALKING</button>
+<div id="map-canvas"></div>
+</body>
+</html>
